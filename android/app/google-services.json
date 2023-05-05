@@ -1,0 +1,47 @@
+ {
+  "project_info": {
+    "project_number": "170192719705",
+    "project_id": "pritamapp-691a1",
+    "storage_bucket": "pritamapp-691a1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170192719705:android:e9294fcdc4f9002e5a4648",
+        "android_client_info": {
+          "package_name": "com.example.flutter_pritam_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "170192719705-go1ret3adq2pn9qcerre8fj0r3jmdon5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutter_pritam_app",
+            "certificate_hash": "5525e098ec02a66b4abc98bd0500cd78a55694db"
+          }
+        },
+        {
+          "client_id": "170192719705-psgbp3lj7pjav14b54epblv9tvbls0bf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA55IyeZqMf3qDYqTL0Jr-KHZHkqrENUtk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "170192719705-psgbp3lj7pjav14b54epblv9tvbls0bf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
