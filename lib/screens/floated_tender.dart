@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pritam_app/screens/result.dart';
+import 'package:flutter_pritam_app/screens/view_floated_details.dart';
 
 class FlotedTender extends StatefulWidget {
   const FlotedTender({super.key});
@@ -11,19 +12,47 @@ class FlotedTender extends StatefulWidget {
 }
 
 class _FlotedTenderState extends State<FlotedTender> {
+  Future<void> deleteTender(id) {
+    CollectionReference tenders =
+        FirebaseFirestore.instance.collection('tenders');
+    return tenders.doc(id).delete().then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.green,
+          content: Text('Tender Deleted Successfully')));
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Failed to Delete tender')));
+    });
+  }
+
   Container getTenderData(data, id) {
-    // print(id);
-    List itemsData = data['tender_holder_data'];
     return Container(
       margin: const EdgeInsets.all(20),
       child: Column(
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              data['tender_name'],
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  data['tender_name'],
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(width: 10),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  deleteTender(id);
+                },
+                color: Colors.blue,
+                iconSize: 30,
+                tooltip: 'Add',
+              )
+            ],
           ),
           Align(
             alignment: Alignment.centerLeft,
@@ -32,52 +61,53 @@ class _FlotedTenderState extends State<FlotedTender> {
               style: const TextStyle(fontSize: 20),
             ),
           ),
-          const SizedBox(height: 10),
-          Table(
-            // defaultColumnWidth: const FixedColumnWidth(120.0),
-            border: TableBorder.all(
-                color: Colors.black, style: BorderStyle.solid, width: 2),
-            children: [
-              TableRow(children: [
-                Column(children: const [
-                  Text('Item', style: TextStyle(fontSize: 22.0))
-                ]),
-                Column(children: const [
-                  Text('Quantity', style: TextStyle(fontSize: 22.0))
-                ]),
-                Column(children: const [
-                  Text('Price', style: TextStyle(fontSize: 22.0))
-                ]),
-              ]),
-              for (var i = 0; i < itemsData.length; i++)
-                TableRow(children: [
-                  Column(children: [
-                    Text(itemsData[i].split("*")[0],
-                        style: const TextStyle(fontSize: 18.0))
-                  ]),
-                  Column(children: [
-                    Text(itemsData[i].split("*")[1],
-                        style: const TextStyle(fontSize: 18.0))
-                  ]),
-                  Column(children: [
-                    Text(itemsData[i].split("*")[2],
-                        style: const TextStyle(fontSize: 18.0))
-                  ]),
-                ]),
-            ],
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              // ignore: prefer_interpolation_to_compose_strings
+              "${"Range of Acceptance -> " + data['tender_range_accp']}%",
+              style: const TextStyle(fontSize: 20),
+            ),
           ),
+          const SizedBox(height: 10),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.only(top: 10),
-            child: ElevatedButton(
-              child: const Text(
-                'Result',
-                style: TextStyle(color: Colors.white, fontSize: 22),
-              ),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => BidResult(id: id)));
-              },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    child: const Text(
+                      'View Details',
+                      style: TextStyle(color: Colors.white, fontSize: 22),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewFloatedDetails(id: id),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    child: const Text(
+                      'Result',
+                      style: TextStyle(color: Colors.white, fontSize: 22),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BidResult(id: id)));
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -91,6 +121,7 @@ class _FlotedTenderState extends State<FlotedTender> {
     final Stream<QuerySnapshot> tenders = FirebaseFirestore.instance
         .collection('tenders')
         .where('tender_holder_id', isEqualTo: currentuser!.uid)
+        .orderBy('tender_post_date', descending: true)
         .snapshots();
     return Scaffold(
       appBar: AppBar(title: const Text("Floated Tender")),

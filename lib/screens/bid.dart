@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class Bid extends StatefulWidget {
@@ -25,6 +26,7 @@ class Bid extends StatefulWidget {
 class _BidState extends State<Bid> {
   final List<Map<String, dynamic>> _tableData = [];
   final List<Map<String, dynamic>> _compareData = [];
+  double range = 100;
 
   Map<String, dynamic> _editingData = {};
 
@@ -87,8 +89,28 @@ class _BidState extends State<Bid> {
     );
   }
 
+  Future showFullText(context, data) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Item Name'),
+            content: Text(data),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              )
+            ],
+          );
+        });
+  }
+
   void fillData(data) {
     List tenderData = data['tender_holder_data'];
+    range = double.parse(data['tender_range_accp']) / 100;
     for (var i = 0; i < tenderData.length; i++) {
       Map<String, dynamic> tempData = {
         'Item': tenderData[i].split("*")[0],
@@ -116,10 +138,10 @@ class _BidState extends State<Bid> {
   final currentuser = FirebaseAuth.instance.currentUser;
 
   // ignore: non_constant_identifier_names
-  bool check_feasibility() {
+  bool check_feasibility(double range) {
     for (var i = 0; i < _tableData.length; i++) {
-      var minPrice = int.parse(_compareData[i]['Price']) * 0.8;
-      var maxPrice = int.parse(_compareData[i]['Price']) * 1.2;
+      var minPrice = int.parse(_compareData[i]['Price']) * (1 - range);
+      var maxPrice = int.parse(_compareData[i]['Price']) * (1 + range);
       if (_tableData[i]['Price'] < minPrice ||
           _tableData[i]['Price'] > maxPrice) {
         return false;
@@ -132,7 +154,7 @@ class _BidState extends State<Bid> {
     final DateTime now = DateTime.now();
     List<String> data = [];
     List<String> compareData = [];
-    String status = check_feasibility() ? "accepted" : "not accepted";
+    String status = check_feasibility(range) ? "accepted" : "not accepted";
 
     for (var i = 0; i < _tableData.length; i++) {
       String tempData = [
@@ -221,8 +243,30 @@ class _BidState extends State<Bid> {
                       rows: _tableData
                           .map(
                             (data) => DataRow(cells: [
-                              DataCell(Text(data['Item'],
-                                  style: const TextStyle(fontSize: 16))),
+                              DataCell(
+                                Text.rich(
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  TextSpan(
+                                    text: '',
+                                    children: [
+                                      TextSpan(
+                                        text: data['Item'].length > 15
+                                            ? data['Item'].substring(0, 10) +
+                                                '...'
+                                            : data['Item'],
+                                        style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 18.0),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            showFullText(context, data['Item']);
+                                          },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               DataCell(Text(data['Quantity'].toString(),
                                   style: const TextStyle(fontSize: 16))),
                               DataCell(Text('${data['Price']}',
@@ -252,7 +296,9 @@ class _BidState extends State<Bid> {
                         style: TextStyle(color: Colors.white, fontSize: 22),
                       ),
                       onPressed: () {
-                        applyTender(context);
+                        applyTender(
+                          context,
+                        );
                       },
                     ),
                   ),

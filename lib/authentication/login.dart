@@ -32,8 +32,8 @@ class _LoginPageState extends State<LoginPage> {
             .showSnackBar(const SnackBar(content: Text('User Not Found')));
       }
       if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Wrong Password')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            backgroundColor: Colors.red, content: Text('Wrong Password')));
       }
     }
   }

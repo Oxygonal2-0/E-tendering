@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pritam_app/screens/bid.dart';
+import 'package:flutter_pritam_app/screens/view_details.dart';
 
 class BidOnTender extends StatefulWidget {
   const BidOnTender({super.key});
@@ -10,11 +11,13 @@ class BidOnTender extends StatefulWidget {
 }
 
 class _BidOnTenderState extends State<BidOnTender> {
-  final Stream<QuerySnapshot> tenders =
-      FirebaseFirestore.instance.collection('tenders').snapshots();
+  final Stream<QuerySnapshot> tenders = FirebaseFirestore.instance
+      .collection('tenders')
+      .orderBy('tender_post_date', descending: true)
+      .snapshots();
 
   Container getTenderData(data, id) {
-    List itemsData = data['tender_holder_data'];
+    // List itemsData = data['tender_holder_data'];
     return Container(
       margin: const EdgeInsets.all(20),
       child: Column(
@@ -34,49 +37,123 @@ class _BidOnTenderState extends State<BidOnTender> {
             ),
           ),
           const SizedBox(height: 10),
-          Table(
-            // defaultColumnWidth: const FixedColumnWidth(180.0),
-            border: TableBorder.all(
-                color: Colors.black, style: BorderStyle.solid, width: 2),
-            children: [
-              TableRow(children: [
-                Column(children: const [
-                  Text('Item', style: TextStyle(fontSize: 22.0))
-                ]),
-                Column(children: const [
-                  Text('Quantity', style: TextStyle(fontSize: 22.0))
-                ]),
-              ]),
-              for (var i = 0; i < itemsData.length; i++)
-                TableRow(children: [
-                  Column(children: [
-                    Text(itemsData[i].split("*")[0],
-                        style: const TextStyle(fontSize: 18.0))
-                  ]),
-                  Column(children: [
-                    Text(itemsData[i].split("*")[1],
-                        style: const TextStyle(fontSize: 18.0))
-                  ]),
-                ]),
-            ],
-          ),
+          // Table(
+          //   // defaultColumnWidth: const FixedColumnWidth(180.0),
+          //   border: TableBorder.all(
+          //       color: Colors.black, style: BorderStyle.solid, width: 2),
+          //   children: [
+          //     TableRow(children: [
+          //       Column(children: const [
+          //         Text('Item', style: TextStyle(fontSize: 22.0))
+          //       ]),
+          //       Column(children: const [
+          //         Text('Quantity', style: TextStyle(fontSize: 22.0))
+          //       ]),
+          //     ]),
+          //     for (var i = 0; i < itemsData.length; i++)
+          //       TableRow(children: [
+          //         Column(children: [
+          //           Text(itemsData[i].split("*")[0],
+          //               style: const TextStyle(fontSize: 18.0))
+          //         ]),
+          //         Column(children: [
+          //           Text(itemsData[i].split("*")[1],
+          //               style: const TextStyle(fontSize: 18.0))
+          //         ]),
+          //       ]),
+          //   ],
+          // ),
+          // // Container(
+          // //   width: double.infinity,
+          // //   padding: const EdgeInsets.only(top: 10),
+          // //   child: Row(
+          // //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // //     children: [
+          // //       Container(
+          // //         // width: double.infinity,
+          // //         // padding: const EdgeInsets.only(top: 10),
+          // //         child: ElevatedButton(
+          // //           child: const Text(
+          // //             'Bid on it!',
+          // //             style: TextStyle(color: Colors.white, fontSize: 22),
+          // //           ),
+          // //           onPressed: () {
+          // //             Navigator.push(
+          // //                 context,
+          // //                 MaterialPageRoute(
+          // //                     builder: (context) => Bid(
+          // //                         id: id,
+          // //                         tender_name: data['tender_name'],
+          // //                         tender_desc: data['tender_desc'])));
+          // //           },
+          // //         ),
+          // //       ),
+          // //       Container(
+          // //         // width: double.infinity,
+          // //         // padding: const EdgeInsets.only(top: 10),
+          // //         child: ElevatedButton(
+          // //           child: const Text(
+          // //             'Bid on it!',
+          // //             style: TextStyle(color: Colors.white, fontSize: 22),
+          // //           ),
+          // //           onPressed: () {
+          // //             Navigator.push(
+          // //                 context,
+          // //                 MaterialPageRoute(
+          // //                     builder: (context) => Bid(
+          // //                         id: id,
+          // //                         tender_name: data['tender_name'],
+          // //                         tender_desc: data['tender_desc'])));
+          // //           },
+          // //         ),
+          // //       ),
+          // //     ],
+          // //   ),
+          // // ),
+
           Container(
             width: double.infinity,
             padding: const EdgeInsets.only(top: 10),
-            child: ElevatedButton(
-              child: const Text(
-                'Bid on it!',
-                style: TextStyle(color: Colors.white, fontSize: 22),
-              ),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Bid(
-                            id: id,
-                            tender_name: data['tender_name'],
-                            tender_desc: data['tender_desc'])));
-              },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    child: const Text(
+                      'View Details',
+                      style: TextStyle(color: Colors.white, fontSize: 22),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewDetails(id: id),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    child: const Text(
+                      'Bid on it!',
+                      style: TextStyle(color: Colors.white, fontSize: 22),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Bid(
+                              id: id,
+                              tender_name: data['tender_name'],
+                              tender_desc: data['tender_desc']),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],

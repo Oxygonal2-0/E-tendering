@@ -15,6 +15,7 @@ class _FloatNewTenderState extends State<FloatNewTender> {
   List<String> price = [];
   String _desc = "";
   String _name = "";
+  String _range = "";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _formKey1 = GlobalKey<FormState>();
   final currentuser = FirebaseAuth.instance.currentUser;
@@ -59,9 +60,9 @@ class _FloatNewTenderState extends State<FloatNewTender> {
                                   if (value!.isEmpty) {
                                     return 'Item Name is Required';
                                   }
-                                  if (value.length >= 30) {
-                                    return 'Item Name should be less than 30';
-                                  }
+                                  // if (value.length >= 30) {
+                                  //   return 'Item Name should be less than 30';
+                                  // }
                                   return null;
                                 },
                                 onSaved: (String? value) {
@@ -140,6 +141,7 @@ class _FloatNewTenderState extends State<FloatNewTender> {
       'tender_holder_id': currentuser!.uid,
       'tender_name': _name,
       'tender_desc': _desc,
+      'tender_range_accp': _range,
       'tender_holder_name': currentuser!.displayName,
       'tender_holder_phone': currentuser!.photoURL,
       'tender_holder_data': data,
@@ -194,6 +196,25 @@ class _FloatNewTenderState extends State<FloatNewTender> {
                         onSaved: (String? value) {
                           _desc = value!;
                         }),
+                    TextFormField(
+
+                        // textCapitalization: TextCapitalization.,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                            labelText: 'Range of Acceptance'),
+                        validator: (String? value) {
+                          if (value!.isEmpty) {
+                            return 'Please Enter Range of Acceptance (in %)';
+                          }
+                          int range = int.parse(value);
+                          if (range > 100 || range <= 0) {
+                            return 'Range of Acceptance should be between 0-100%';
+                          }
+                          return null;
+                        },
+                        onSaved: (String? value) {
+                          _range = value!;
+                        }),
                   ],
                 )),
           ),
@@ -201,7 +222,6 @@ class _FloatNewTenderState extends State<FloatNewTender> {
               ? Container(
                   margin: const EdgeInsets.all(20),
                   child: Table(
-                    // defaultColumnWidth: const FixedColumnWidth(120.0),
                     border: TableBorder.all(
                         color: Colors.black,
                         style: BorderStyle.solid,

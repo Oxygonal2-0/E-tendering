@@ -60,6 +60,7 @@ class _BidResultState extends State<BidResult> {
                 ],
               ),
             ),
+          
           ]),
           Column(children: [
             Text("${data.amount}", style: const TextStyle(fontSize: 18.0))
@@ -84,8 +85,8 @@ class _BidResultState extends State<BidResult> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Text('Loading...');
         }
-        List<Pair<int, String, String, String>> output = [];
-        List<Pair<int, String, String, String>> notOutput = [];
+        // List<Pair<int, String, String, String>> output = [];
+        // List<Pair<int, String, String, String>> notOutput = [];
         List<Pair<int, String, String, String>> list =
             snapshot.data!.docs.map((DocumentSnapshot document) {
           Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
@@ -98,16 +99,17 @@ class _BidResultState extends State<BidResult> {
           return pair;
         }).toList();
 
-        for (var element in list) {
-          if (element.status == 'accepted') {
-            output.add(element);
-          } else {
-            notOutput.add(element);
-          }
-        }
+        // for (var element in list) {
+        //   if (element.status == 'accepted') {
+        //     output.add(element);
+        //   } else {
+        //     notOutput.add(element);
+        //   }
+        // }
 
-        output.sort((a, b) => a.amount.compareTo(b.amount));
-        notOutput.sort((a, b) => a.amount.compareTo(b.amount));
+        list.sort((a, b) => a.amount.compareTo(b.amount));
+        // output.sort((a, b) => a.amount.compareTo(b.amount));
+        // notOutput.sort((a, b) => a.amount.compareTo(b.amount));
 
         return Table(
           border: TableBorder.all(
@@ -124,8 +126,9 @@ class _BidResultState extends State<BidResult> {
                 Text('See Details', style: TextStyle(fontSize: 22.0))
               ]),
             ]),
-            for (var i = 0; i < output.length; i++) getTableRow(output[i]),
-            for (var i = 0; i < notOutput.length; i++) getTableRow(notOutput[i])
+            for (var i = 0; i < list.length; i++) getTableRow(list[i]),
+            // for (var i = 0; i < output.length; i++) getTableRow(output[i]),
+            // for (var i = 0; i < notOutput.length; i++) getTableRow(notOutput[i])
           ],
         );
       },
