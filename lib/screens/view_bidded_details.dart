@@ -95,6 +95,7 @@ class _ViewBiddedDetailsState extends State<ViewBiddedDetails> {
                       ),
                     ),
                   ]),
+                  
                   Column(children: [
                     Text(itemsData[i].split("*")[1],
                         style: const TextStyle(fontSize: 18.0))

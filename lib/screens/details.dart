@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class Details extends StatefulWidget {
@@ -30,10 +31,45 @@ class _DetailsState extends State<Details> {
     return Colors.green;
   }
 
+  Future showFullText(context, data) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Item Name'),
+            content: Text(data),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              )
+            ],
+          );
+        });
+  }
+
   TableRow getTableRow(data) {
     return TableRow(decoration: BoxDecoration(color: data.status), children: [
       Column(children: [
-        Text(data.itemName, style: const TextStyle(fontSize: 18.0))
+        Text.rich(
+          overflow: TextOverflow.ellipsis,
+          maxLines: 2,
+          TextSpan(
+            text: '',
+            children: [
+              TextSpan(
+                text: data.itemName,
+                style: const TextStyle(color: Colors.black, fontSize: 18.0),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    showFullText(context, data.itemName);
+                  },
+              ),
+            ],
+          ),
+        ),
       ]),
       Column(children: [
         Text(data.quantity, style: const TextStyle(fontSize: 18.0))
@@ -78,25 +114,29 @@ class _DetailsState extends State<Details> {
                 .add(Group(itemName, quantity, amount, responseAmount, status));
           }
 
-          return Table(
-            border: TableBorder.all(
-                color: Colors.black, style: BorderStyle.solid, width: 2),
+          return ListView(
             children: [
-              TableRow(children: [
-                Column(children: const [
-                  Text('Item Name', style: TextStyle(fontSize: 22.0))
-                ]),
-                Column(children: const [
-                  Text('Quantity', style: TextStyle(fontSize: 22.0))
-                ]),
-                Column(children: const [
-                  Text('Estimated Price', style: TextStyle(fontSize: 22.0))
-                ]),
-                Column(children: const [
-                  Text('Actual Price', style: TextStyle(fontSize: 22.0))
-                ]),
-              ]),
-              for (var i = 0; i < output.length; i++) getTableRow(output[i])
+              Table(
+                border: TableBorder.all(
+                    color: Colors.black, style: BorderStyle.solid, width: 2),
+                children: [
+                  TableRow(children: [
+                    Column(children: const [
+                      Text('Item Name', style: TextStyle(fontSize: 22.0))
+                    ]),
+                    Column(children: const [
+                      Text('Quantity', style: TextStyle(fontSize: 22.0))
+                    ]),
+                    Column(children: const [
+                      Text('Estimated Price', style: TextStyle(fontSize: 22.0))
+                    ]),
+                    Column(children: const [
+                      Text('Actual Price', style: TextStyle(fontSize: 22.0))
+                    ]),
+                  ]),
+                  for (var i = 0; i < output.length; i++) getTableRow(output[i])
+                ],
+              ),
             ],
           );
         }

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class FloatNewTender extends StatefulWidget {
@@ -158,6 +159,25 @@ class _FloatNewTenderState extends State<FloatNewTender> {
     Navigator.pop(context);
   }
 
+  Future showFullText(context, data) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Item Name'),
+            content: Text(data),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              )
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,8 +261,24 @@ class _FloatNewTenderState extends State<FloatNewTender> {
                       for (var i = 0; i < names.length; i++)
                         TableRow(children: [
                           Column(children: [
-                            Text(names[i],
-                                style: const TextStyle(fontSize: 18.0))
+                            Text.rich(
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              TextSpan(
+                                text: '',
+                                children: [
+                                  TextSpan(
+                                    text: names[i],
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 18.0),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        showFullText(context, names[i]);
+                                      },
+                                  ),
+                                ],
+                              ),
+                            ),
                           ]),
                           Column(children: [
                             Text(quantities[i],
