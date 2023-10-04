@@ -1,4 +1,4 @@
-# flutter_pritam_app
+# E-Tendering App
 
 A new Flutter project.
 
